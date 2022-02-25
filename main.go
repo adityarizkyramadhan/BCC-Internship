@@ -9,4 +9,5 @@ import (
 func main() {
 	r := gin.Default()
 	r.POST("/user/newuser", handler.NewUserHandler)
+	r.Run()
 }
