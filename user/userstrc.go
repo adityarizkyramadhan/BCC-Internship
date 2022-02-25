@@ -26,6 +26,15 @@ type Doctor struct {
 	Education string
 	ClinicId  uint
 }
+
+type NewClinic struct {
+	NameClinic     string `json:"nameClinic" binding:"required"`
+	UsernameClinic string `json:"usernameClinic" binding:"required"`
+	PasswordClinic string `json:"passwordClinic" binding:"required"`
+	Contact        string `json:"contact" binding:"required"`
+	Address        string `json:"address" binding:"required"`
+}
+
 type Clinic struct {
 	gorm.Model
 	NameClinic     string

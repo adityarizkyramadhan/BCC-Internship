@@ -8,7 +8,10 @@ import (
 
 func main() {
 	r := gin.Default()
-	r.POST("/user/newuser", handler.NewUserHandler)
+	//tempat endpoint user
+	r.POST("/user/new", handler.NewUserHandler)
 	r.POST("/user/login", handler.UserLogin)
+	//tempat endpoint klinik
+	r.POST("/clinic/new", handler.NewClinicalHandler)
 	r.Run()
 }
