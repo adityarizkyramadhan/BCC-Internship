@@ -50,7 +50,23 @@ func UserLogin(c *gin.Context) {
 		})
 	}
 	var body user.UserLogin
-	c.BindJSON(&body)
-	if 
-
+	if c.BindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"Status":  "Bad Request",
+			"Message": "Error when binding JSON",
+			"Error":   err.Error(),
+		})
+	}
+	if db.Where(&body).First(&user.User{}); err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"Status":  "Unauthorized",
+			"Message": "Username or password is incorrect",
+			"Error":   err.Error(),
+		})
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"Status":  "Status OK",
+		"Message": "User logged in",
+		"User":    user.User{},
+	})
 }
