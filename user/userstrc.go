@@ -7,7 +7,7 @@ type User struct {
 	Name     string
 	Contact  string
 	Username string
-	Password string
+	Password []byte
 	Address  string
 }
 
@@ -18,13 +18,15 @@ type NewUser struct {
 	Password string `json:"password" binding:"required"`
 	Address  string `json:"address" binding:"required"`
 }
+
 type Doctor struct {
 	gorm.Model
-	Name      string
-	Age       int
-	Address   string
-	Education string
-	ClinicId  uint
+	Name       string
+	Age        int
+	Address    string
+	Education  string
+	SlotClinic int
+	ClinicId   uint
 }
 
 type NewClinic struct {
@@ -39,7 +41,7 @@ type Clinic struct {
 	gorm.Model
 	NameClinic     string
 	UsernameClinic string
-	PasswordClinic string
+	PasswordClinic []byte
 	Contact        string
 	Address        string
 }

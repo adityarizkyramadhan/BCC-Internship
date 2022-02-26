@@ -16,9 +16,17 @@ func NewUserHandler(c *gin.Context) {
 			"Message": "Error when initializing databases",
 			"Error":   err.Error(),
 		})
+		return
 	}
 	var body user.NewUser
-	c.BindJSON(&body)
+	if c.BindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"Status":  "Bad Request",
+			"Message": "Error when binding JSON",
+			"Error":   err.Error(),
+		})
+		return
+	}
 	user := user.NewUser{
 		Name:     body.Name,
 		Contact:  body.Contact,
@@ -32,6 +40,7 @@ func NewUserHandler(c *gin.Context) {
 			"Message": "Error creating user",
 			"Error":   err.Error(),
 		})
+		return
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"Status":  "Status OK",
@@ -48,6 +57,7 @@ func UserLogin(c *gin.Context) {
 			"Message": "Error when initializing databases",
 			"Error":   err.Error(),
 		})
+		return
 	}
 	var body user.UserLogin
 	if c.BindJSON(&body); err != nil {
@@ -56,17 +66,20 @@ func UserLogin(c *gin.Context) {
 			"Message": "Error when binding JSON",
 			"Error":   err.Error(),
 		})
+		return
 	}
-	if db.Where(&body).First(&user.User{}); err != nil {
+	var user user.User
+	if db.Where(&body).Take(&user); err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"Status":  "Unauthorized",
 			"Message": "Username or password is incorrect",
 			"Error":   err.Error(),
 		})
+		return
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"Status":  "Status OK",
 		"Message": "User logged in",
-		"User":    user.User{},
+		"User":    user,
 	})
 }
