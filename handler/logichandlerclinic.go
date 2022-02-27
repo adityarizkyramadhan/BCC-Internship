@@ -9,6 +9,43 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+func ReadClinic(c *gin.Context) {
+	db, err := config.InitializeDatabases()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"Status":  "Internal Server Error",
+			"Message": "Error when initializing databases",
+			"Error":   err.Error(),
+		})
+		return
+	}
+	var clinic []user.Clinic
+	if db.Find(&clinic); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"Status":  "Internal Server Error",
+			"Message": "Error when finding clinic",
+			"Error":   err.Error(),
+		})
+		return
+	}
+	var printClinic []user.GetClinic
+	for i := range clinic {
+		printClinic = append(printClinic, user.GetClinic{
+			ID:         clinic[i].ID,
+			NameClinic: clinic[i].NameClinic,
+			Address:    clinic[i].Address,
+			Contact:    clinic[i].Contact,
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"Status":  "Status OK",
+		"Message": "Clinic found",
+		"Clinic":  printClinic,
+	})
+
+}
+
 func NewClinicalHandler(c *gin.Context) {
 	db, err := config.InitializeDatabases()
 	if err != nil {
@@ -42,7 +79,7 @@ func NewClinicalHandler(c *gin.Context) {
 		Address:        body.Address,
 		Contact:        body.Contact,
 		UsernameClinic: body.UsernameClinic,
-		PasswordClinic: password,
+		PasswordClinic: string(password),
 	}
 	if db.Create(&clinic); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -52,12 +89,11 @@ func NewClinicalHandler(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{
+	c.JSON(http.StatusCreated, gin.H{
 		"Status":  "Status OK",
 		"Message": "Clinic created",
 		"Clinic":  clinic,
 	})
-
 }
 
 func ClinicLogin(c *gin.Context) {
@@ -78,7 +114,7 @@ func ClinicLogin(c *gin.Context) {
 		})
 	}
 	var clinic user.Clinic
-	if db.Where("username = ?", body.Username).Take(&clinic); err != nil {
+	if db.Where("usernameclinic = ?", body.Username).Take(&clinic); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"Status":  "Internal Server Error",
 			"Message": "Erorr when querrying database",

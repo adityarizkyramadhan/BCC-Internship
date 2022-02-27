@@ -7,7 +7,7 @@ type User struct {
 	Name     string
 	Contact  string
 	Username string
-	Password []byte
+	Password string
 	Address  string
 }
 
@@ -19,47 +19,7 @@ type NewUser struct {
 	Address  string `json:"address" binding:"required"`
 }
 
-type Doctor struct {
-	gorm.Model
-	Name       string
-	Age        int
-	Address    string
-	Education  string
-	SlotClinic int
-	ClinicId   uint
-}
-
-type NewClinic struct {
-	NameClinic     string `json:"nameClinic" binding:"required"`
-	UsernameClinic string `json:"usernameClinic" binding:"required"`
-	PasswordClinic string `json:"passwordClinic" binding:"required"`
-	Contact        string `json:"contact" binding:"required"`
-	Address        string `json:"address" binding:"required"`
-}
-
-type Clinic struct {
-	gorm.Model
-	NameClinic     string
-	UsernameClinic string
-	PasswordClinic []byte
-	Contact        string
-	Address        string
-}
-
-type Animal struct {
-	gorm.Model
-	Name        string
-	Age         int
-	Description string
-	OwnerId     uint
-}
-
 type UserLogin struct {
-	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required"`
-}
-
-type ClinicLogin struct {
 	Username string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }

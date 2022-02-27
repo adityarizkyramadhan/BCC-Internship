@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func NewUserHandler(c *gin.Context) {
@@ -27,11 +28,20 @@ func NewUserHandler(c *gin.Context) {
 		})
 		return
 	}
-	user := user.NewUser{
+	password, err := bcrypt.GenerateFromPassword([]byte(body.Password), 12)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"Status":  "Internal Server Error",
+			"Message": "Error when hashing password",
+			"Error":   err.Error(),
+		})
+		return
+	}
+	user := user.User{
 		Name:     body.Name,
 		Contact:  body.Contact,
 		Username: body.Username,
-		Password: body.Password,
+		Password: string(password),
 		Address:  body.Address,
 	}
 	if db.Create(&user); err != nil {
@@ -42,7 +52,7 @@ func NewUserHandler(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{
+	c.JSON(http.StatusCreated, gin.H{
 		"Status":  "Status OK",
 		"Message": "User created",
 		"User":    user,
@@ -69,10 +79,18 @@ func UserLogin(c *gin.Context) {
 		return
 	}
 	var user user.User
-	if db.Where(&body).Take(&user); err != nil {
+	if db.Where("username = ?", body.Username).Take(&user); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"Status":  "Status Internal Server Error",
+			"Message": "Error when querrying username",
+			"Error":   err.Error(),
+		})
+		return
+	}
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password)); err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"Status":  "Unauthorized",
-			"Message": "Username or password is incorrect",
+			"Message": "Error when comparing password",
 			"Error":   err.Error(),
 		})
 		return
