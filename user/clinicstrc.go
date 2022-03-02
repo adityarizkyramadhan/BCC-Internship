@@ -7,21 +7,24 @@ type Clinic struct {
 	NameClinic     string
 	UsernameClinic string
 	PasswordClinic string
+	SpreadSheet    string
 	Contact        string
 	Address        string
 }
 
 type GetClinic struct {
-	ID         uint
-	NameClinic string
-	Contact    string
-	Address    string
+	ID          uint
+	NameClinic  string
+	Contact     string
+	Address     string
+	SpreadSheet string
 }
 
 type NewClinic struct {
 	NameClinic     string `json:"nameClinic" binding:"required"`
-	UsernameClinic string `json:"usernameClinic" binding:"required"`
+	UsernameClinic string `json:"usernameClinic" binding:"required,min=8,max=20"`
 	PasswordClinic string `json:"passwordClinic" binding:"required"`
+	SpreadSheet    string `json:"spreadSheet" binding:"required"`
 	Contact        string `json:"contact" binding:"required"`
 	Address        string `json:"address" binding:"required"`
 }

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"BCC-Internship/config"
+	"BCC-Internship/tokengenerator"
 	"BCC-Internship/user"
 	"net/http"
 
@@ -13,49 +14,65 @@ func NewUserHandler(c *gin.Context) {
 	db, err := config.InitializeDatabases()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"Status":  "Internal Server Error",
-			"Message": "Error when initializing databases",
-			"Error":   err.Error(),
+			"status":  "Internal Server Error",
+			"message": "Error when initializing databases",
+			"data":    err.Error(),
 		})
 		return
 	}
 	var body user.NewUser
 	if c.BindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"Status":  "Bad Request",
-			"Message": "Error when binding JSON",
-			"Error":   err.Error(),
+			"status":  "Bad Request",
+			"message": "Error when binding JSON",
+			"data":    err.Error(),
 		})
 		return
 	}
 	password, err := bcrypt.GenerateFromPassword([]byte(body.Password), 12)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"Status":  "Internal Server Error",
-			"Message": "Error when hashing password",
-			"Error":   err.Error(),
+			"status":  "Internal Server Error",
+			"message": "Error when hashing password",
+			"data":    err.Error(),
 		})
 		return
 	}
-	user := user.User{
+	userPrivate := user.User{
 		Name:     body.Name,
 		Contact:  body.Contact,
 		Username: body.Username,
 		Password: string(password),
 		Address:  body.Address,
 	}
-	if db.Create(&user); err != nil {
+	if db.Create(&userPrivate); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"Status":  "Internal Server Error",
-			"Message": "Error creating user",
-			"Error":   err.Error(),
+			"status":  "Internal Server Error",
+			"message": "Error creating user",
+			"data":    err.Error(),
 		})
 		return
 	}
+	token, err := tokengenerator.GenerateTokenUser(&userPrivate)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status":  "Internal Server Error",
+			"message": "Error when generating token",
+			"data":    err.Error(),
+		})
+		return
+	}
+	getUser := user.ReturnUser{
+		ID:      userPrivate.ID,
+		Name:    userPrivate.Name,
+		Contact: userPrivate.Contact,
+		Address: userPrivate.Address,
+		Token:   token,
+	}
 	c.JSON(http.StatusCreated, gin.H{
-		"Status":  "Status OK",
-		"Message": "User created",
-		"User":    user,
+		"status":  "Status OK",
+		"message": "User created",
+		"data":    getUser,
 	})
 }
 
@@ -63,41 +80,58 @@ func UserLogin(c *gin.Context) {
 	db, err := config.InitializeDatabases()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"Status":  "Internal Server Error",
-			"Message": "Error when initializing databases",
-			"Error":   err.Error(),
+			"status":  "Internal Server Error",
+			"message": "Error when initializing databases",
+			"data":    err.Error(),
 		})
 		return
 	}
 	var body user.UserLogin
 	if c.BindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"Status":  "Bad Request",
-			"Message": "Error when binding JSON",
-			"Error":   err.Error(),
+			"status":  "Bad Request",
+			"message": "Error when binding JSON",
+			"data":    err.Error(),
 		})
 		return
 	}
-	var user user.User
-	if db.Where("username = ?", body.Username).Take(&user); err != nil {
+	var userPrivate user.User
+	if db.Where("username = ?", body.Username).Take(&userPrivate); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"Status":  "Status Internal Server Error",
-			"Message": "Error when querrying username",
-			"Error":   err.Error(),
+			"status":  "Status Internal Server Error",
+			"message": "Error when querrying username",
+			"data":    err.Error(),
 		})
 		return
 	}
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(userPrivate.Password), []byte(body.Password)); err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"Status":  "Unauthorized",
-			"Message": "Error when comparing password",
-			"Error":   err.Error(),
+			"status":  "Unauthorized",
+			"message": "Error when comparing password",
+			"data":    err.Error(),
 		})
 		return
+	}
+	token, err := tokengenerator.GenerateTokenUser(&userPrivate)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status":  "Internal Server Error",
+			"message": "Error when generating token",
+			"data":    err.Error(),
+		})
+		return
+	}
+	getUser := user.ReturnUser{
+		ID:      userPrivate.ID,
+		Name:    userPrivate.Name,
+		Contact: userPrivate.Contact,
+		Address: userPrivate.Address,
+		Token:   token,
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"Status":  "Status OK",
-		"Message": "User logged in",
-		"User":    user,
+		"status":  "Status OK",
+		"message": "User logged in",
+		"data":    getUser,
+		"token":   token,
 	})
 }

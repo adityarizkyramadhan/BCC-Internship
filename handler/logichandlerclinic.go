@@ -2,6 +2,7 @@ package handler
 
 import (
 	"BCC-Internship/config"
+	"BCC-Internship/tokengenerator"
 	"BCC-Internship/user"
 	"net/http"
 
@@ -13,64 +14,63 @@ func ReadClinic(c *gin.Context) {
 	db, err := config.InitializeDatabases()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"Status":  "Internal Server Error",
-			"Message": "Error when initializing databases",
-			"Error":   err.Error(),
+			"status":  "Internal Server Error",
+			"message": "Error when initializing databases",
+			"data":    err.Error(),
 		})
 		return
 	}
 	var clinic []user.Clinic
 	if db.Find(&clinic); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"Status":  "Internal Server Error",
-			"Message": "Error when finding clinic",
-			"Error":   err.Error(),
+			"status":  "Internal Server Error",
+			"message": "Error when finding clinic",
+			"data":    err.Error(),
 		})
 		return
 	}
 	var printClinic []user.GetClinic
 	for i := range clinic {
 		printClinic = append(printClinic, user.GetClinic{
-			ID:         clinic[i].ID,
-			NameClinic: clinic[i].NameClinic,
-			Address:    clinic[i].Address,
-			Contact:    clinic[i].Contact,
+			ID:          clinic[i].ID,
+			NameClinic:  clinic[i].NameClinic,
+			Address:     clinic[i].Address,
+			Contact:     clinic[i].Contact,
+			SpreadSheet: clinic[i].SpreadSheet,
 		})
 	}
-
 	c.JSON(http.StatusOK, gin.H{
-		"Status":  "Status OK",
-		"Message": "Clinic found",
-		"Clinic":  printClinic,
+		"status":  "Status OK",
+		"message": "Clinic found",
+		"data":    printClinic,
 	})
-
 }
 
 func NewClinicalHandler(c *gin.Context) {
 	db, err := config.InitializeDatabases()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"Status":  "Internal Server Error",
-			"Message": "Error when initializing databases",
-			"Error":   err.Error(),
+			"status":  "Internal Server Error",
+			"message": "Error when initializing databases",
+			"data":    err.Error(),
 		})
 		return
 	}
 	var body user.NewClinic
 	if c.BindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"Status":  "Bad Request",
-			"Message": "Error when binding JSON",
-			"Error":   err.Error(),
+			"status":  "Bad Request",
+			"message": "Error when binding JSON",
+			"data":    err.Error(),
 		})
 		return
 	}
 	password, err := bcrypt.GenerateFromPassword([]byte(body.PasswordClinic), 12)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"Status":  "Internal Server Error",
-			"Message": "Error when hashing password",
-			"Error":   err.Error(),
+			"status":  "Internal Server Error",
+			"message": "Error when hashing password",
+			"data":    err.Error(),
 		})
 		return
 	}
@@ -79,20 +79,23 @@ func NewClinicalHandler(c *gin.Context) {
 		Address:        body.Address,
 		Contact:        body.Contact,
 		UsernameClinic: body.UsernameClinic,
+		SpreadSheet:    body.SpreadSheet,
 		PasswordClinic: string(password),
 	}
 	if db.Create(&clinic); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"Status":  "Internal Server Error",
-			"Message": "Error creating clinic",
-			"Error":   err.Error(),
+			"status":  "Internal Server Error",
+			"message": "Error creating clinic",
+			"data":    err.Error(),
 		})
 		return
 	}
+	token, err := tokengenerator.GenerateTokenClinic(&clinic)
 	c.JSON(http.StatusCreated, gin.H{
-		"Status":  "Status OK",
-		"Message": "Clinic created",
-		"Clinic":  clinic,
+		"status":  "Status OK",
+		"message": "Clinic created",
+		"data":    clinic,
+		"token":   token,
 	})
 }
 
@@ -100,38 +103,48 @@ func ClinicLogin(c *gin.Context) {
 	db, err := config.InitializeDatabases()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"Status":  "Internal Server Error",
-			"Message": "Error when initializing databases",
-			"Error":   err.Error(),
+			"status":  "Internal Server Error",
+			"message": "Error when initializing databases",
+			"data":    err.Error(),
 		})
 	}
 	var body user.ClinicLogin
 	if c.BindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"Status":  "Bad Request",
-			"Message": "Error when binding JSON",
-			"Error":   err.Error(),
+			"status":  "Bad Request",
+			"message": "Error when binding JSON",
+			"data":    err.Error(),
 		})
 	}
 	var clinic user.Clinic
 	if db.Where("usernameclinic = ?", body.Username).Take(&clinic); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"Status":  "Internal Server Error",
-			"Message": "Erorr when querrying database",
-			"Error":   err.Error(),
+			"status":  "Internal Server Error",
+			"message": "Erorr when querrying database",
+			"data":    err.Error(),
 		})
 		return
 	}
 	if bcrypt.CompareHashAndPassword([]byte(clinic.PasswordClinic), []byte(body.Password)) != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"Status":  "Unauthorized",
-			"Message": "Invalid username or password",
+			"status":  "Unauthorized",
+			"message": "Invalid username or password",
+		})
+		return
+	}
+	token, err := tokengenerator.GenerateTokenClinic(&clinic)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status":  "Internal Server Error",
+			"message": "Error when generating token",
+			"data":    err.Error(),
 		})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"Status":  "Status OK",
-		"Message": "Clinic logged in",
-		"Clinic":  clinic,
+		"status":  "Status OK",
+		"message": "Clinic logged in",
+		"token":   token,
+		"data":    clinic,
 	})
 }

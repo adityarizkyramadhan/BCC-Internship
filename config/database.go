@@ -1,6 +1,7 @@
 package config
 
 import (
+	"BCC-Internship/model"
 	"BCC-Internship/user"
 
 	"gorm.io/driver/mysql"
@@ -12,7 +13,7 @@ func InitializeDatabases() (*gorm.DB, error) {
 	if err != nil {
 		panic(err)
 	}
-	err = db.AutoMigrate(&user.User{}, &user.Doctor{}, &user.Clinic{}, &user.Animal{})
+	err = db.AutoMigrate(&user.User{}, &user.Clinic{}, &user.Animal{}, &model.Payment{})
 	if err != nil {
 		panic(err)
 	}

@@ -24,7 +24,10 @@ type UserLogin struct {
 	Password string `json:"password" binding:"required"`
 }
 
-type DoctorLogin struct {
-	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required"`
+type ReturnUser struct {
+	ID      uint
+	Name    string
+	Contact string
+	Address string
+	Token   string
 }
