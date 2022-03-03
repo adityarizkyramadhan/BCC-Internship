@@ -16,9 +16,10 @@ type Payment struct {
 	Umur         int
 	Tanggal      string
 }
-
+type InputUriClinic struct {
+	IdClinic int `uri:"id" binding:"required"`
+}
 type PaymentInput struct {
-	ClinicId     uint   `json:"clinicId" binding:"required"`
 	JenisHewan   string `json:"jenisHewan" binding:"required"`
 	Keluhan      string `json:"keluhan" binding:"required"`
 	Ras          string `json:"ras" binding:"required"`

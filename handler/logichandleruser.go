@@ -22,7 +22,7 @@ func NewUserHandler(c *gin.Context) {
 	}
 	var body user.NewUser
 	if c.BindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
 			"status":  "Bad Request",
 			"message": "Error when binding JSON",
 			"data":    err.Error(),
@@ -88,7 +88,7 @@ func UserLogin(c *gin.Context) {
 	}
 	var body user.UserLogin
 	if c.BindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
 			"status":  "Bad Request",
 			"message": "Error when binding JSON",
 			"data":    err.Error(),

@@ -14,15 +14,27 @@ func Payment(c *gin.Context) {
 	var PayIn model.PaymentInput
 	err := c.BindJSON(&PayIn)
 	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"status":  "error",
+			"message": "Invalid input",
+			"data":    err.Error(),
+		})
+		return
+	}
+	var IdUri model.InputUriClinic
+	err = c.BindUri(&IdUri)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status":  "error",
 			"message": "Invalid input",
 			"data":    err.Error(),
 		})
+		return
 	}
+
 	paymentUser := model.Payment{
 		UserId:       userLogin.(user.UserMasuk).ID,
-		ClinicId:     PayIn.ClinicId,
+		ClinicId:     uint(IdUri.IdClinic),
 		Status:       false,
 		JenisHewan:   PayIn.JenisHewan,
 		Keluhan:      PayIn.Keluhan,

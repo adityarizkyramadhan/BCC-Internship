@@ -58,7 +58,7 @@ func NewClinicalHandler(c *gin.Context) {
 	}
 	var body user.NewClinic
 	if c.BindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
 			"status":  "Bad Request",
 			"message": "Error when binding JSON",
 			"data":    err.Error(),
@@ -91,6 +91,14 @@ func NewClinicalHandler(c *gin.Context) {
 		return
 	}
 	token, err := tokengenerator.GenerateTokenClinic(&clinic)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status":  "Internal Server Error",
+			"message": "Error when generating token",
+			"data":    err.Error(),
+		})
+		return
+	}
 	clinicReturn := user.GetClinic{
 		ID:          clinic.ID,
 		NameClinic:  clinic.NameClinic,
@@ -117,7 +125,7 @@ func ClinicLogin(c *gin.Context) {
 	}
 	var body user.ClinicLogin
 	if c.BindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
 			"status":  "Bad Request",
 			"message": "Error when binding JSON",
 			"data":    err.Error(),
