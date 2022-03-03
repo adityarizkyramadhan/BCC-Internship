@@ -24,6 +24,13 @@ type UserLogin struct {
 	Password string `json:"password" binding:"required"`
 }
 
+type UserMasuk struct {
+	ID      uint
+	Name    string
+	Contact string
+	Address string
+}
+
 type ReturnUser struct {
 	ID      uint
 	Name    string

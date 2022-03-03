@@ -91,11 +91,18 @@ func NewClinicalHandler(c *gin.Context) {
 		return
 	}
 	token, err := tokengenerator.GenerateTokenClinic(&clinic)
+	clinicReturn := user.GetClinic{
+		ID:          clinic.ID,
+		NameClinic:  clinic.NameClinic,
+		Address:     clinic.Address,
+		Contact:     clinic.Contact,
+		SpreadSheet: clinic.SpreadSheet,
+		Token:       token,
+	}
 	c.JSON(http.StatusCreated, gin.H{
 		"status":  "Status OK",
 		"message": "Clinic created",
-		"data":    clinic,
-		"token":   token,
+		"data":    clinicReturn,
 	})
 }
 
@@ -141,10 +148,17 @@ func ClinicLogin(c *gin.Context) {
 		})
 		return
 	}
+	clinicReturn := user.GetClinic{
+		ID:          clinic.ID,
+		NameClinic:  clinic.NameClinic,
+		Address:     clinic.Address,
+		Contact:     clinic.Contact,
+		SpreadSheet: clinic.SpreadSheet,
+		Token:       token,
+	}
 	c.JSON(http.StatusOK, gin.H{
 		"status":  "Status OK",
 		"message": "Clinic logged in",
-		"token":   token,
-		"data":    clinic,
+		"data":    clinicReturn,
 	})
 }

@@ -5,11 +5,13 @@ import (
 	"BCC-Internship/handler"
 	"BCC-Internship/middleware"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	r := gin.Default()
+	r.Use(cors.Default())
 	//tempat endpoint user
 	_, err := config.InitializeDatabases()
 	if err != nil {
