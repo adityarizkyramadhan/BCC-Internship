@@ -12,15 +12,13 @@ import (
 func main() {
 	r := gin.Default()
 	r.Use(cors.Default())
-	//tempat endpoint user
 	_, err := config.InitializeDatabases()
 	if err != nil {
 		panic(err)
 	}
 	r.POST("/user/register", handler.NewUserHandler)
 	r.POST("/user/login", handler.UserLogin)
-	// "/user/:id
-	//tempat endpoint klinik
+	r.POST("/user/:idclinic/payment", middleware.CheckJwtUser(), handler.Payment)
 	r.GET("/clinic", middleware.CheckJwtUser(), handler.ReadClinic)
 	r.POST("/clinic/register", handler.NewClinicalHandler)
 	r.POST("/clinic/login", handler.ClinicLogin)
