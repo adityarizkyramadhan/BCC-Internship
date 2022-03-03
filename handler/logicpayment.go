@@ -31,7 +31,6 @@ func Payment(c *gin.Context) {
 		})
 		return
 	}
-
 	paymentUser := model.Payment{
 		UserId:       userLogin.(user.UserMasuk).ID,
 		ClinicId:     uint(IdUri.IdClinic),
