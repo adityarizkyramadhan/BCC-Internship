@@ -7,6 +7,7 @@ import (
 type Payment struct {
 	gorm.Model
 	UserId       uint
+	ClinicId     uint
 	Status       bool
 	JenisHewan   string
 	Keluhan      string
@@ -17,12 +18,11 @@ type Payment struct {
 }
 
 type PaymentInput struct {
-	UserId       uint   `json:"user_id" binding:"required"`
-	Status       bool   `json:"status" binding:"required"`
-	JenisHewan   string `json:"jenis_hewan" binding:"required"`
+	ClinicId     uint   `json:"clinicId" binding:"required"`
+	JenisHewan   string `json:"jenisHewan" binding:"required"`
 	Keluhan      string `json:"keluhan" binding:"required"`
 	Ras          string `json:"ras" binding:"required"`
-	JenisKelamin string `json:"jenis_kelamin" binding:"required"`
+	JenisKelamin string `json:"jenisKelamin" binding:"required"`
 	Umur         int    `json:"umur" binding:"required"`
 	Tanggal      string `json:"tanggal" binding:"required"`
 }
