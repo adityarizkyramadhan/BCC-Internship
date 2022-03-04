@@ -45,3 +45,71 @@ func GetAllPaymentClinic(c *gin.Context) {
 		"data":    getPayment,
 	})
 }
+
+func UpdatePayment(c *gin.Context) {
+	db, err := config.InitializeDatabases()
+	if err != nil {
+		panic(err)
+	}
+	clinicLogin := c.MustGet("cliniclogin").(user.ClinicMasuk)
+	var payment model.Payment
+	var uri model.InputUriPayment
+	if err := c.BindUri(&uri); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"status":  "error",
+			"message": "Invalid input",
+			"data":    err.Error(),
+		})
+		return
+	}
+	if err := db.Where("id = ?", uri.IdPayment).Take(&payment).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"status":  "error",
+			"message": "Payment not found",
+			"data":    err.Error(),
+		})
+		return
+	}
+	if payment.ClinicId != clinicLogin.ID {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"status":  "error",
+			"message": "Unauthorized",
+			"data":    "You are not authorized to update this payment",
+		})
+	}
+	var input model.InputStatusPayment
+	if err := c.BindJSON(&input); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"status":  "error",
+			"message": "Invalid input",
+			"data":    err.Error(),
+		})
+		return
+	}
+	payment.Status = input.Status
+	if err := db.Save(&payment).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status":  "error",
+			"message": "Internal server error",
+			"data":    err.Error(),
+		})
+		return
+	}
+	sendData := model.GetPayment{
+		IDTransaction: payment.ID,
+		UserId:        payment.UserId,
+		ClinicId:      payment.ClinicId,
+		Status:        payment.Status,
+		JenisHewan:    payment.JenisHewan,
+		Keluhan:       payment.Keluhan,
+		Ras:           payment.Ras,
+		JenisKelamin:  payment.JenisKelamin,
+		Umur:          payment.Umur,
+		SaveImage:     payment.SaveImage,
+	}
+	c.JSON(http.StatusAccepted, gin.H{
+		"status":  "success",
+		"message": "Update payment success",
+		"data":    sendData,
+	})
+}

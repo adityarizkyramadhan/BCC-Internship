@@ -69,3 +69,11 @@ type ReturnImage struct {
 	TransactionID uint
 	Path          string
 }
+
+type InputUriPayment struct {
+	IdPayment int `uri:"idpayment" binding:"required"`
+}
+
+type InputStatusPayment struct {
+	Status bool `json:"status" binding:"required"`
+}
