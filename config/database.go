@@ -13,7 +13,7 @@ func InitializeDatabases() (*gorm.DB, error) {
 	if err != nil {
 		panic(err)
 	}
-	err = db.AutoMigrate(&user.User{}, &user.Clinic{}, &model.Payment{}, model.Payment{}, model.SaveImage{})
+	err = db.AutoMigrate(&user.User{}, &user.Clinic{}, &model.Payment{}, &model.SaveImage{})
 	if err != nil {
 		panic(err)
 	}
