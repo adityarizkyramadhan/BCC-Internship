@@ -16,9 +16,11 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	r.Static("/image", "./image")
 	r.POST("/user/register", handler.NewUserHandler)
 	r.POST("/user/login", handler.UserLogin)
 	r.POST("/user/:idclinic/payment", middleware.CheckJwtUser(), handler.Payment)
+	r.POST("/user/payment/:idtransaction/upload", middleware.CheckJwtUser(), handler.UploadStructPayment)
 	r.GET("/clinic", middleware.CheckJwtUser(), handler.ReadClinic)
 	r.POST("/clinic/register", handler.NewClinicalHandler)
 	r.POST("/clinic/login", handler.ClinicLogin)
