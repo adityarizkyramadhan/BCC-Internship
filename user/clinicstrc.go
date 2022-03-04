@@ -21,6 +21,14 @@ type GetClinic struct {
 	Token       string
 }
 
+type PrintClinic struct {
+	ID          uint
+	NameClinic  string
+	Contact     string
+	Address     string
+	SpreadSheet string
+}
+
 type NewClinic struct {
 	NameClinic     string `json:"nameClinic" binding:"required"`
 	UsernameClinic string `json:"usernameClinic" binding:"required,min=8,max=20"`

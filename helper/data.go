@@ -5,13 +5,13 @@ import (
 	"BCC-Internship/user"
 )
 
-func SearchUserById(id int) interface{} {
+func SearchUserById(id int) user.UserMasuk {
 	db, err := config.InitializeDatabases()
 	if err != nil {
 		panic(err)
 	}
 	var userSearch user.User
-	db.Where("id = ?", id).Take(&userSearch)
+	db.Where("ID = ?", id).Take(&userSearch)
 	result := user.UserMasuk{
 		ID:      userSearch.ID,
 		Name:    userSearch.Name,
@@ -21,13 +21,13 @@ func SearchUserById(id int) interface{} {
 	return result
 }
 
-func SearchClinicById(id int) interface{} {
+func SearchClinicById(id int) user.ClinicMasuk {
 	db, err := config.InitializeDatabases()
 	if err != nil {
 		panic(err)
 	}
 	var userSearch user.Clinic
-	db.Where("id = ?", id).Take(&userSearch)
+	db.Where("ID = ?", id).Take(&userSearch)
 	result := user.ClinicMasuk{
 		ID:          userSearch.ID,
 		NameClinic:  userSearch.NameClinic,

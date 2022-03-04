@@ -30,9 +30,10 @@ func CheckJwtUser() gin.HandlerFunc {
 		}
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 			idUser := int(claims["id"].(float64))
+			fmt.Println(idUser)
 			userIn := helper.SearchUserById(idUser)
-			c.Set("user", userIn)
-
+			fmt.Println(userIn)
+			c.Set("userlogin", userIn)
 		} else {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"status":  "Unauthorized",

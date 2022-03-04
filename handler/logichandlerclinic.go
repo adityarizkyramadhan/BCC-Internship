@@ -29,9 +29,9 @@ func ReadClinic(c *gin.Context) {
 		})
 		return
 	}
-	var printClinic []user.GetClinic
+	var printClinic []user.PrintClinic
 	for i := range clinic {
-		printClinic = append(printClinic, user.GetClinic{
+		printClinic = append(printClinic, user.PrintClinic{
 			ID:          clinic[i].ID,
 			NameClinic:  clinic[i].NameClinic,
 			Address:     clinic[i].Address,
@@ -132,7 +132,7 @@ func ClinicLogin(c *gin.Context) {
 		})
 	}
 	var clinic user.Clinic
-	if db.Where("usernameclinic = ?", body.Username).Take(&clinic); err != nil {
+	if db.Where("username_clinic = ?", body.Username).Take(&clinic); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status":  "Internal Server Error",
 			"message": "Erorr when querrying database",
@@ -140,10 +140,11 @@ func ClinicLogin(c *gin.Context) {
 		})
 		return
 	}
-	if bcrypt.CompareHashAndPassword([]byte(clinic.PasswordClinic), []byte(body.Password)) != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(clinic.PasswordClinic), []byte(body.Password)); err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"status":  "Unauthorized",
 			"message": "Invalid username or password",
+			"data":    err.Error(),
 		})
 		return
 	}
