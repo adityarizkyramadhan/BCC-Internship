@@ -66,7 +66,7 @@ func CheckJwtClinic() gin.HandlerFunc {
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 			idUser := int(claims["id"].(float64))
 			userIn := helper.SearchClinicById(idUser)
-			c.Set("clinic", userIn)
+			c.Set("cliniclogin", userIn)
 
 		} else {
 			c.JSON(http.StatusUnauthorized, gin.H{

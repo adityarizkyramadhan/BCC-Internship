@@ -14,7 +14,6 @@ type Payment struct {
 	Ras          string
 	JenisKelamin string
 	Umur         int
-	Tanggal      string
 	SaveImage    SaveImage
 }
 
@@ -41,7 +40,7 @@ type GetPayment struct {
 	Ras           string
 	JenisKelamin  string
 	Umur          int
-	LinkImage     string
+	SaveImage     SaveImage
 }
 
 type InputUriClinic struct {
@@ -54,7 +53,6 @@ type PaymentInput struct {
 	Ras          string `json:"ras" binding:"required"`
 	JenisKelamin string `json:"jenisKelamin" binding:"required"`
 	Umur         int    `json:"umur" binding:"required"`
-	Tanggal      string `json:"tanggal" binding:"required"`
 }
 
 type InputUriTransaction struct {

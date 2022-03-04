@@ -23,6 +23,7 @@ func main() {
 	r.POST("/user/payment/:idtransaction/upload", middleware.CheckJwtUser(), handler.UploadStructPayment)
 	r.GET("/clinic", middleware.CheckJwtUser(), handler.ReadClinic)
 	r.POST("/clinic/register", handler.NewClinicalHandler)
+	r.GET("/clinic/seepayment", middleware.CheckJwtClinic(), handler.GetAllPaymentClinic)
 	r.POST("/clinic/login", handler.ClinicLogin)
 	r.Run()
 }

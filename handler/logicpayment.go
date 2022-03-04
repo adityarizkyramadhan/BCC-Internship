@@ -42,7 +42,6 @@ func Payment(c *gin.Context) {
 		Ras:          PayIn.Ras,
 		JenisKelamin: PayIn.JenisKelamin,
 		Umur:         PayIn.Umur,
-		Tanggal:      PayIn.Tanggal,
 	}
 	db, err := config.InitializeDatabases()
 	if err != nil {
@@ -59,7 +58,6 @@ func Payment(c *gin.Context) {
 		Ras:           paymentUser.Ras,
 		JenisKelamin:  paymentUser.JenisKelamin,
 		Umur:          paymentUser.Umur,
-		Tanggal:       paymentUser.Tanggal,
 	}
 	c.JSON(http.StatusCreated, gin.H{
 		"status":  "success",
@@ -102,8 +100,8 @@ func UploadStructPayment(c *gin.Context) {
 		return
 	}
 	image := model.SaveImage{
-		TransactionID: uint(idTrx.IdTransaction),
-		Path:          path,
+		PaymentId: uint(idTrx.IdTransaction),
+		Path:      path,
 	}
 	db, err := config.InitializeDatabases()
 	if err != nil {
@@ -111,7 +109,7 @@ func UploadStructPayment(c *gin.Context) {
 	}
 	db.Create(&image)
 	returnImage := model.ReturnImage{
-		TransactionID: image.TransactionID,
+		TransactionID: uint(idTrx.IdTransaction),
 		Path:          image.Path,
 	}
 	c.JSON(http.StatusCreated, gin.H{
