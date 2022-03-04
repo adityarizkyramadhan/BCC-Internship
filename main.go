@@ -26,5 +26,7 @@ func main() {
 	r.POST("/clinic/login", handler.ClinicLogin)
 	r.GET("/clinic/seepayment", middleware.CheckJwtClinic(), handler.GetAllPaymentClinic)
 	r.POST("/clinic/:idpayment/update", middleware.CheckJwtClinic(), handler.UpdatePayment)
+	r.GET("clinic/showinvoice", middleware.CheckJwtClinic(), handler.ShowInvoices)
 	r.Run()
+
 }

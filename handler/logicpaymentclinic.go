@@ -9,6 +9,44 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func ShowInvoices(c *gin.Context) {
+	db, err := config.InitializeDatabases()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status":  "Internal Server Error",
+			"message": "Error when initializing databases",
+			"data":    err.Error(),
+		})
+		return
+	}
+	clinicLogin := c.MustGet("cliniclogin").(user.ClinicMasuk)
+	var payment []model.Payment
+	if err := db.Find(&payment, "clinic_id = ?", clinicLogin.ID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"status":  "Not Found",
+			"message": "Payment not found",
+			"data":    err.Error(),
+		})
+		return
+	}
+	var getPayment []model.DataInvoice
+	for _, v := range payment {
+		if v.Status {
+			getPayment = append(getPayment, model.DataInvoice{
+				IDTransaction: v.ID,
+				UserId:        v.UserId,
+				ClinicId:      v.ClinicId,
+				Status:        v.Status,
+			})
+		}
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"status":  "success",
+		"message": "Get invoices success",
+		"data":    len(getPayment) * 4000,
+	})
+}
+
 func GetAllPaymentClinic(c *gin.Context) {
 	db, err := config.InitializeDatabases()
 	if err != nil {

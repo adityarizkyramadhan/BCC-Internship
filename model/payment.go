@@ -77,3 +77,10 @@ type InputUriPayment struct {
 type InputStatusPayment struct {
 	Status bool `json:"status" binding:"required"`
 }
+
+type DataInvoice struct {
+	IDTransaction uint
+	UserId        uint
+	ClinicId      uint
+	Status        bool
+}
