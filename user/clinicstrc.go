@@ -10,6 +10,7 @@ type Clinic struct {
 	SpreadSheet    string
 	Contact        string
 	Address        string
+	NoRekening     string
 }
 
 type GetClinic struct {
@@ -19,6 +20,7 @@ type GetClinic struct {
 	Address     string
 	SpreadSheet string
 	Token       string
+	NoRekening  string
 }
 
 type PrintClinic struct {
@@ -27,6 +29,7 @@ type PrintClinic struct {
 	Contact     string
 	Address     string
 	SpreadSheet string
+	NoRekening  string
 }
 
 type NewClinic struct {
@@ -36,6 +39,7 @@ type NewClinic struct {
 	SpreadSheet    string `json:"spreadSheet" binding:"required"`
 	Contact        string `json:"contact" binding:"required"`
 	Address        string `json:"address" binding:"required"`
+	NoRekening     string `json:"noRekening" binding:"required"`
 }
 
 type ClinicLogin struct {

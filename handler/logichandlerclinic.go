@@ -37,6 +37,7 @@ func ReadClinic(c *gin.Context) {
 			Address:     clinic[i].Address,
 			Contact:     clinic[i].Contact,
 			SpreadSheet: clinic[i].SpreadSheet,
+			NoRekening:  clinic[i].NoRekening,
 		})
 	}
 	c.JSON(http.StatusOK, gin.H{
@@ -81,6 +82,7 @@ func NewClinicalHandler(c *gin.Context) {
 		UsernameClinic: body.UsernameClinic,
 		SpreadSheet:    body.SpreadSheet,
 		PasswordClinic: string(password),
+		NoRekening:     body.NoRekening,
 	}
 	if db.Create(&clinic); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -105,6 +107,7 @@ func NewClinicalHandler(c *gin.Context) {
 		Address:     clinic.Address,
 		Contact:     clinic.Contact,
 		SpreadSheet: clinic.SpreadSheet,
+		NoRekening:  clinic.NoRekening,
 		Token:       token,
 	}
 	c.JSON(http.StatusCreated, gin.H{
@@ -163,6 +166,7 @@ func ClinicLogin(c *gin.Context) {
 		Address:     clinic.Address,
 		Contact:     clinic.Contact,
 		SpreadSheet: clinic.SpreadSheet,
+		NoRekening:  clinic.NoRekening,
 		Token:       token,
 	}
 	c.JSON(http.StatusOK, gin.H{
