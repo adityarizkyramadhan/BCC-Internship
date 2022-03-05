@@ -4,6 +4,7 @@ import (
 	"BCC-Internship/config"
 	"BCC-Internship/tokengenerator"
 	"BCC-Internship/user"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -29,6 +30,7 @@ func NewUserHandler(c *gin.Context) {
 		})
 		return
 	}
+	fmt.Println("Sampe sini sukses")
 	password, err := bcrypt.GenerateFromPassword([]byte(body.Password), 12)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -45,6 +47,25 @@ func NewUserHandler(c *gin.Context) {
 		Password: string(password),
 		Address:  body.Address,
 	}
+	var usernameSama user.User
+	// check username already exists
+	if db.Where("username = ?", userPrivate.Username).Take(&usernameSama); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status":  "Internal Server Error",
+			"message": "Error when checking username",
+			"data":    err.Error(),
+		})
+		return
+	}
+	if usernameSama.Username == userPrivate.Username {
+		c.JSON(http.StatusConflict, gin.H{
+			"status":  "Conflict",
+			"message": "Username already exists",
+			"data":    "Error because username already exists",
+		})
+		return
+	}
+	fmt.Println("Sampe sini sukses deket db create")
 	if db.Create(&userPrivate); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status":  "Internal Server Error",
@@ -53,6 +74,7 @@ func NewUserHandler(c *gin.Context) {
 		})
 		return
 	}
+	fmt.Println("Sampe sini sukses deket token")
 	token, err := tokengenerator.GenerateTokenUser(&userPrivate)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -132,6 +154,5 @@ func UserLogin(c *gin.Context) {
 		"status":  "Status OK",
 		"message": "User logged in",
 		"data":    getUser,
-		"token":   token,
 	})
 }

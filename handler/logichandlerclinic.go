@@ -38,6 +38,7 @@ func ReadClinic(c *gin.Context) {
 			Contact:     clinic[i].Contact,
 			SpreadSheet: clinic[i].SpreadSheet,
 			NoRekening:  clinic[i].NoRekening,
+			AtasNama:    clinic[i].AtasNama,
 		})
 	}
 	c.JSON(http.StatusOK, gin.H{
@@ -83,6 +84,24 @@ func NewClinicalHandler(c *gin.Context) {
 		SpreadSheet:    body.SpreadSheet,
 		PasswordClinic: string(password),
 		NoRekening:     body.NoRekening,
+		AtasNama:       body.AtasNama,
+	}
+	var clinicSama user.Clinic
+	if db.Where("username_clinic = ?", body.UsernameClinic).First(&clinicSama); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status":  "Internal Server Error",
+			"message": "Error when querrying clinic",
+			"data":    err.Error(),
+		})
+		return
+	}
+	if clinicSama.UsernameClinic == clinic.UsernameClinic {
+		c.JSON(http.StatusConflict, gin.H{
+			"status":  "Conflict",
+			"message": "Username already exist",
+			"data":    "Error because username already exists",
+		})
+		return
 	}
 	if db.Create(&clinic); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -109,6 +128,7 @@ func NewClinicalHandler(c *gin.Context) {
 		SpreadSheet: clinic.SpreadSheet,
 		NoRekening:  clinic.NoRekening,
 		Token:       token,
+		AtasNama:    clinic.AtasNama,
 	}
 	c.JSON(http.StatusCreated, gin.H{
 		"status":  "Status OK",
@@ -167,6 +187,7 @@ func ClinicLogin(c *gin.Context) {
 		Contact:     clinic.Contact,
 		SpreadSheet: clinic.SpreadSheet,
 		NoRekening:  clinic.NoRekening,
+		AtasNama:    clinic.AtasNama,
 		Token:       token,
 	}
 	c.JSON(http.StatusOK, gin.H{

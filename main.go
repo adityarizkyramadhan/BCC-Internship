@@ -4,6 +4,7 @@ import (
 	"BCC-Internship/config"
 	"BCC-Internship/handler"
 	"BCC-Internship/middleware"
+	"BCC-Internship/pasien"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -24,9 +25,13 @@ func main() {
 	r.GET("/user/seeclinic", middleware.CheckJwtUser(), handler.ReadClinic)
 	r.POST("/clinic/register", handler.NewClinicalHandler)
 	r.POST("/clinic/login", handler.ClinicLogin)
-	r.GET("/clinic/seepayment", middleware.CheckJwtClinic(), handler.GetAllPaymentClinic)
-	r.POST("/clinic/:idpayment/update", middleware.CheckJwtClinic(), handler.UpdatePayment)
-	r.GET("clinic/showinvoice", middleware.CheckJwtClinic(), handler.ShowInvoices)
+	r.GET("/clinic/payment", middleware.CheckJwtClinic(), handler.GetAllPaymentClinic)
+	r.POST("/clinic/:idpayment/validate", middleware.CheckJwtClinic(), handler.UpdatePayment)
+	r.GET("/clinic/paymentsuccess", middleware.CheckJwtClinic(), handler.SeeValidatePayment)
+	r.GET("/clinic/showinvoice", middleware.CheckJwtClinic(), handler.ShowInvoices)
+	r.GET("/clinic/seepatient", middleware.CheckJwtClinic(), pasien.GetPasien)
+	//Klinik payment home atau klinik payment
+	//riwayat transaksi
+	//komunitas
 	r.Run()
-
 }

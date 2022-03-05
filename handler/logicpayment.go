@@ -32,7 +32,6 @@ func Payment(c *gin.Context) {
 		})
 		return
 	}
-	fmt.Println(userLogin)
 	paymentUser := model.Payment{
 		UserId:       userLogin.ID,
 		ClinicId:     uint(IdUri.IdClinic),
@@ -42,11 +41,19 @@ func Payment(c *gin.Context) {
 		Ras:          PayIn.Ras,
 		JenisKelamin: PayIn.JenisKelamin,
 		Umur:         PayIn.Umur,
+		Tanggal:      PayIn.Tanggal,
+		Layanan:      PayIn.Layanan,
+	}
+	if PayIn.Layanan == "home" {
+		paymentUser.Harga = "150000"
+	} else {
+		paymentUser.Harga = "100000"
 	}
 	db, err := config.InitializeDatabases()
 	if err != nil {
 		panic(err)
 	}
+
 	db.Create(&paymentUser)
 	sendPayment := model.PaymentReturn{
 		IDTransaction: paymentUser.ID,
@@ -58,6 +65,9 @@ func Payment(c *gin.Context) {
 		Ras:           paymentUser.Ras,
 		JenisKelamin:  paymentUser.JenisKelamin,
 		Umur:          paymentUser.Umur,
+		Tanggal:       paymentUser.Tanggal,
+		Layanan:       paymentUser.Layanan,
+		Harga:         paymentUser.Harga,
 	}
 	c.JSON(http.StatusCreated, gin.H{
 		"status":  "success",

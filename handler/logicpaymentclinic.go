@@ -9,6 +9,53 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func SeeValidatePayment(c *gin.Context) {
+	db, err := config.InitializeDatabases()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status":  "Internal Server Error",
+			"message": "Error when initializing databases",
+			"data":    err.Error(),
+		})
+		return
+	}
+	clinicLogin := c.MustGet("cliniclogin").(user.ClinicMasuk)
+	var payment []model.Payment
+	if err := db.Preload("SaveImage").Find(&payment, "clinic_id = ?", clinicLogin.ID).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status":  "Internal Server Error",
+			"message": "Error when getting payment",
+			"data":    err.Error(),
+		})
+		return
+	}
+	var getPayment []model.GetPayment
+	for _, v := range payment {
+		if v.Status {
+			getPayment = append(getPayment, model.GetPayment{
+				IDTransaction: v.ID,
+				UserId:        v.UserId,
+				ClinicId:      v.ClinicId,
+				Status:        v.Status,
+				JenisHewan:    v.JenisHewan,
+				Keluhan:       v.Keluhan,
+				Ras:           v.Ras,
+				JenisKelamin:  v.JenisKelamin,
+				Umur:          v.Umur,
+				Tanggal:       v.Tanggal,
+				Layanan:       v.Layanan,
+				Harga:         v.Harga,
+				SaveImage:     v.SaveImage,
+			})
+		}
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"status":  "success",
+		"message": "See all payment success",
+		"data":    getPayment,
+	})
+}
+
 func ShowInvoices(c *gin.Context) {
 	db, err := config.InitializeDatabases()
 	if err != nil {
@@ -21,7 +68,7 @@ func ShowInvoices(c *gin.Context) {
 	}
 	clinicLogin := c.MustGet("cliniclogin").(user.ClinicMasuk)
 	var payment []model.Payment
-	if err := db.Find(&payment, "clinic_id = ?", clinicLogin.ID).Error; err != nil {
+	if err := db.Preload("SaveImage").Find(&payment, "clinic_id = ?", clinicLogin.ID).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"status":  "Not Found",
 			"message": "Payment not found",
@@ -40,10 +87,14 @@ func ShowInvoices(c *gin.Context) {
 			})
 		}
 	}
+	invoice := model.ReturnInvoice{
+		BanyakPayment: len(getPayment),
+		TotalBayar:    len(getPayment) * 4000,
+	}
 	c.JSON(http.StatusOK, gin.H{
 		"status":  "success",
 		"message": "Get invoices success",
-		"data":    len(getPayment) * 4000,
+		"data":    invoice,
 	})
 }
 
@@ -54,7 +105,7 @@ func GetAllPaymentClinic(c *gin.Context) {
 	}
 	clinicLogin := c.MustGet("cliniclogin").(user.ClinicMasuk)
 	var payment []model.Payment
-	if err := db.Find(&payment, "clinic_id = ?", clinicLogin.ID).Error; err != nil {
+	if err := db.Preload("SaveImage").Find(&payment, "clinic_id = ?", clinicLogin.ID).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status":  "error",
 			"message": "Internal server error",
@@ -74,6 +125,9 @@ func GetAllPaymentClinic(c *gin.Context) {
 			Ras:           v.Ras,
 			JenisKelamin:  v.JenisKelamin,
 			Umur:          v.Umur,
+			Tanggal:       v.Tanggal,
+			Layanan:       v.Layanan,
+			Harga:         v.Harga,
 			SaveImage:     v.SaveImage,
 		})
 	}
@@ -143,11 +197,14 @@ func UpdatePayment(c *gin.Context) {
 		Ras:           payment.Ras,
 		JenisKelamin:  payment.JenisKelamin,
 		Umur:          payment.Umur,
+		Tanggal:       payment.Tanggal,
+		Layanan:       payment.Layanan,
+		Harga:         payment.Harga,
 		SaveImage:     payment.SaveImage,
 	}
 	c.JSON(http.StatusAccepted, gin.H{
 		"status":  "success",
-		"message": "Update payment success",
+		"message": "Validate payment success",
 		"data":    sendData,
 	})
 }
