@@ -3,6 +3,7 @@ package main
 import (
 	"BCC-Internship/config"
 	"BCC-Internship/handler"
+	"BCC-Internship/komunitas"
 	"BCC-Internship/middleware"
 	"BCC-Internship/pasien"
 
@@ -25,6 +26,8 @@ func main() {
 	r.POST("/user/payment/:idtransaction/upload", middleware.CheckJwtUser(), handler.UploadStructPayment)
 	r.GET("/user/seeclinic", middleware.CheckJwtUser(), handler.ReadClinic)
 	r.GET("/user/history", middleware.CheckJwtUser(), handler.GetHistory)
+	r.GET("/user/community", middleware.CheckJwtUser(), komunitas.GetKomunitas)
+	r.GET("/user/community/search", middleware.CheckJwtUser(), komunitas.SearchKomunitas)
 
 	//Klinik
 	r.POST("/clinic/register", handler.NewClinicalHandler)
@@ -36,5 +39,7 @@ func main() {
 	r.GET("/clinic/seepatient", middleware.CheckJwtClinic(), pasien.GetPasien)
 
 	//komunitas
+	r.POST("/petmate/komunitas", komunitas.AddKomunitas)
+
 	r.Run()
 }
