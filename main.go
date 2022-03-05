@@ -18,11 +18,15 @@ func main() {
 		panic(err)
 	}
 	r.Static("/image", "./image")
+	// User
 	r.POST("/user/register", handler.NewUserHandler)
 	r.POST("/user/login", handler.UserLogin)
 	r.POST("/user/:idclinic/payment", middleware.CheckJwtUser(), handler.Payment)
 	r.POST("/user/payment/:idtransaction/upload", middleware.CheckJwtUser(), handler.UploadStructPayment)
 	r.GET("/user/seeclinic", middleware.CheckJwtUser(), handler.ReadClinic)
+	r.GET("/user/history", middleware.CheckJwtUser(), handler.GetHistory)
+
+	//Klinik
 	r.POST("/clinic/register", handler.NewClinicalHandler)
 	r.POST("/clinic/login", handler.ClinicLogin)
 	r.GET("/clinic/payment", middleware.CheckJwtClinic(), handler.GetAllPaymentClinic)
@@ -30,8 +34,7 @@ func main() {
 	r.GET("/clinic/paymentsuccess", middleware.CheckJwtClinic(), handler.SeeValidatePayment)
 	r.GET("/clinic/showinvoice", middleware.CheckJwtClinic(), handler.ShowInvoices)
 	r.GET("/clinic/seepatient", middleware.CheckJwtClinic(), pasien.GetPasien)
-	//Klinik payment home atau klinik payment
-	//riwayat transaksi
+
 	//komunitas
 	r.Run()
 }
