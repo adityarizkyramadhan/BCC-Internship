@@ -10,6 +10,7 @@ import (
 )
 
 type Pasien struct {
+	IDPayment       uint
 	NamaUser        string
 	Alamat          string
 	Contact         string
@@ -33,22 +34,26 @@ func GetPasien(c *gin.Context) {
 	clinicLogin := c.MustGet("cliniclogin").(user.ClinicMasuk)
 	var payment []model.Payment
 	db.Where("clinic_id = ?", clinicLogin.ID).Find(&payment)
+	var statusPasien user.StatusPasien
 	for _, v := range payment {
 		if v.Status {
 			var user user.User
 			db.Where("id = ?", v.UserId).Take(&user)
+			db.Where("id = ?", v.ID).Take(&statusPasien)
 			pasien = append(pasien, Pasien{
-				NamaUser:     user.Name,
-				Alamat:       user.Address,
-				Contact:      user.Contact,
-				JenisHewan:   v.JenisHewan,
-				Keluhan:      v.Keluhan,
-				Ras:          v.Ras,
-				JenisKelamin: v.JenisKelamin,
-				Umur:         v.Umur,
-				Jam:          v.Jam,
-				Tanggal:      v.Tanggal,
-				Layanan:      v.Layanan,
+				IDPayment:       v.ID,
+				NamaUser:        user.Name,
+				Alamat:          user.Address,
+				Contact:         user.Contact,
+				JenisHewan:      v.JenisHewan,
+				Keluhan:         v.Keluhan,
+				Ras:             v.Ras,
+				JenisKelamin:    v.JenisKelamin,
+				Umur:            v.Umur,
+				Jam:             v.Jam,
+				Tanggal:         v.Tanggal,
+				Layanan:         v.Layanan,
+				StatusPelayanan: statusPasien.Status,
 			})
 		}
 	}
