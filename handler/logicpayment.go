@@ -98,7 +98,7 @@ func UploadStructPayment(c *gin.Context) {
 		return
 	}
 	// get file name
-	path := fmt.Sprintf("image/foto%d-%s", idTrx.IdTransaction, file.Filename)
+	path := fmt.Sprintf("imagesPayment/foto%d-%s", idTrx.IdTransaction, file.Filename)
 	// save file to folder
 	err = c.SaveUploadedFile(file, path)
 	if err != nil {

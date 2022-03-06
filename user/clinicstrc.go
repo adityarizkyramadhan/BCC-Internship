@@ -12,6 +12,7 @@ type Clinic struct {
 	Address        string
 	AtasNama       string
 	NoRekening     string
+	PathFoto       string
 }
 
 type GetClinic struct {
@@ -23,6 +24,7 @@ type GetClinic struct {
 	Token       string
 	AtasNama    string
 	NoRekening  string
+	PathFoto    string
 }
 
 type PrintClinic struct {
@@ -33,6 +35,7 @@ type PrintClinic struct {
 	SpreadSheet string
 	NoRekening  string
 	AtasNama    string
+	PathFoto    string
 }
 
 type NewClinic struct {
