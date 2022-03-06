@@ -3,7 +3,6 @@ package handler
 import (
 	"BCC-Internship/config"
 	"BCC-Internship/model"
-	"BCC-Internship/pasien"
 	"BCC-Internship/user"
 	"net/http"
 
@@ -206,10 +205,11 @@ func UpdatePayment(c *gin.Context) {
 		Jam:           payment.Jam,
 		SaveImage:     payment.SaveImage,
 	}
-	statusPasien := pasien.StatusPasien{
+	statusPasien := user.StatusPasien{
 		Status:    payment.Status,
 		IDPayment: payment.ID,
 	}
+
 	db.Create(&statusPasien)
 	c.JSON(http.StatusAccepted, gin.H{
 		"status":  "success",
