@@ -13,10 +13,11 @@ type Payment struct {
 	Keluhan      string
 	Ras          string
 	JenisKelamin string
-	Umur         int
+	Umur         string
 	Tanggal      string
 	Layanan      string
 	Harga        string
+	Jam          string
 	SaveImage    SaveImage
 }
 
@@ -29,9 +30,10 @@ type PaymentReturn struct {
 	Keluhan       string
 	Ras           string
 	JenisKelamin  string
-	Umur          int
+	Umur          string
 	Tanggal       string
 	Harga         string
+	Jam           string
 	Layanan       string
 }
 
@@ -44,10 +46,11 @@ type GetPayment struct {
 	Keluhan       string
 	Ras           string
 	JenisKelamin  string
-	Umur          int
+	Umur          string
 	Tanggal       string
 	Layanan       string
 	Harga         string
+	Jam           string
 	SaveImage     SaveImage
 }
 
@@ -60,8 +63,9 @@ type PaymentInput struct {
 	Keluhan      string `json:"keluhan" binding:"required"`
 	Ras          string `json:"ras" binding:"required"`
 	JenisKelamin string `json:"jenisKelamin" binding:"required"`
-	Umur         int    `json:"umur" binding:"required"`
+	Umur         string `json:"umur" binding:"required"`
 	Tanggal      string `json:"tanggal" binding:"required"`
+	Jam          string `json:"jam" binding:"required"`
 	Layanan      string `json:"layanan" binding:"required"`
 }
 

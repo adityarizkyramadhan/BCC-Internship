@@ -45,6 +45,7 @@ func SeeValidatePayment(c *gin.Context) {
 				Tanggal:       v.Tanggal,
 				Layanan:       v.Layanan,
 				Harga:         v.Harga,
+				Jam:           v.Jam,
 				SaveImage:     v.SaveImage,
 			})
 		}
@@ -127,6 +128,7 @@ func GetAllPaymentClinic(c *gin.Context) {
 			Umur:          v.Umur,
 			Tanggal:       v.Tanggal,
 			Layanan:       v.Layanan,
+			Jam:           v.Jam,
 			Harga:         v.Harga,
 			SaveImage:     v.SaveImage,
 		})
@@ -200,6 +202,7 @@ func UpdatePayment(c *gin.Context) {
 		Tanggal:       payment.Tanggal,
 		Layanan:       payment.Layanan,
 		Harga:         payment.Harga,
+		Jam:           payment.Jam,
 		SaveImage:     payment.SaveImage,
 	}
 	c.JSON(http.StatusAccepted, gin.H{

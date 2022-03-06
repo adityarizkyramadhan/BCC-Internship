@@ -17,8 +17,9 @@ type Pasien struct {
 	Keluhan      string
 	Ras          string
 	JenisKelamin string
-	Umur         int
+	Umur         string
 	Tanggal      string
+	Jam          string
 }
 
 func GetPasien(c *gin.Context) {
@@ -43,6 +44,7 @@ func GetPasien(c *gin.Context) {
 				Ras:          v.Ras,
 				JenisKelamin: v.JenisKelamin,
 				Umur:         v.Umur,
+				Jam:          v.Jam,
 				Tanggal:      v.Tanggal,
 			})
 		}
