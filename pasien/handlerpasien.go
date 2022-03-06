@@ -10,16 +10,18 @@ import (
 )
 
 type Pasien struct {
-	NamaUser     string
-	Alamat       string
-	Contact      string
-	JenisHewan   string
-	Keluhan      string
-	Ras          string
-	JenisKelamin string
-	Umur         string
-	Tanggal      string
-	Jam          string
+	NamaUser        string
+	Alamat          string
+	Contact         string
+	JenisHewan      string
+	Keluhan         string
+	Ras             string
+	JenisKelamin    string
+	Umur            string
+	Tanggal         string
+	Jam             string
+	Layanan         string
+	StatusPelayanan bool
 }
 
 func GetPasien(c *gin.Context) {
@@ -46,6 +48,7 @@ func GetPasien(c *gin.Context) {
 				Umur:         v.Umur,
 				Jam:          v.Jam,
 				Tanggal:      v.Tanggal,
+				Layanan:      v.Layanan,
 			})
 		}
 	}
@@ -54,4 +57,44 @@ func GetPasien(c *gin.Context) {
 		"message": "See all patient success",
 		"data":    pasien,
 	})
+}
+
+type inputanUpdate struct {
+	Status bool `json:"status" binding:"required"`
+}
+
+type returnStatus struct {
+	IdPayment uint
+	Status    bool
+}
+
+func UpdatePatient(c *gin.Context) {
+	db, err := config.InitializeDatabases()
+	if err != nil {
+		panic(err)
+	}
+	var uriPayment model.InputUriPayment
+	c.BindUri(&uriPayment)
+	var statusPasien user.StatusPasien
+	if err := db.Where("id = ?", uint(uriPayment.IdPayment)).Take(&statusPasien).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"status":  "failed",
+			"message": "Payment not found",
+			"data":    "nil",
+		})
+	}
+	var inputan inputanUpdate
+	c.BindJSON(&inputan)
+	statusPasien.Status = inputan.Status
+	db.Save(&statusPasien)
+	returnStatus := returnStatus{
+		IdPayment: uint(uriPayment.IdPayment),
+		Status:    inputan.Status,
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"status":  "success",
+		"message": "Update status pasien success",
+		"data":    returnStatus,
+	})
+
 }

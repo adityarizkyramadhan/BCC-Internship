@@ -37,7 +37,7 @@ func main() {
 	r.GET("/clinic/paymentsuccess", middleware.CheckJwtClinic(), handler.SeeValidatePayment)
 	r.GET("/clinic/showinvoice", middleware.CheckJwtClinic(), handler.ShowInvoices)
 	r.GET("/clinic/seepatient", middleware.CheckJwtClinic(), pasien.GetPasien)
-
+	r.POST("/clinic/:idpayment/updatepatient", middleware.CheckJwtClinic(), pasien.UpdatePatient)
 	//komunitas
 	r.POST("/petmate/komunitas", komunitas.AddKomunitas)
 

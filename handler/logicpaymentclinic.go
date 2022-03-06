@@ -3,6 +3,7 @@ package handler
 import (
 	"BCC-Internship/config"
 	"BCC-Internship/model"
+	"BCC-Internship/pasien"
 	"BCC-Internship/user"
 	"net/http"
 
@@ -69,7 +70,7 @@ func ShowInvoices(c *gin.Context) {
 	}
 	clinicLogin := c.MustGet("cliniclogin").(user.ClinicMasuk)
 	var payment []model.Payment
-	if err := db.Preload("SaveImage").Find(&payment, "clinic_id = ?", clinicLogin.ID).Error; err != nil {
+	if err := db.Find(&payment, "clinic_id = ?", clinicLogin.ID).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"status":  "Not Found",
 			"message": "Payment not found",
@@ -205,6 +206,11 @@ func UpdatePayment(c *gin.Context) {
 		Jam:           payment.Jam,
 		SaveImage:     payment.SaveImage,
 	}
+	statusPasien := pasien.StatusPasien{
+		Status:    payment.Status,
+		IDPayment: payment.ID,
+	}
+	db.Create(&statusPasien)
 	c.JSON(http.StatusAccepted, gin.H{
 		"status":  "success",
 		"message": "Validate payment success",
