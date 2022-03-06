@@ -103,7 +103,7 @@ func NewClinicalHandler(c *gin.Context) {
 		})
 		return
 	}
-	file, err := c.FormFile("transaction")
+	file, err := c.FormFile("fotoklinik")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status":  "error",
