@@ -258,6 +258,7 @@ func ClinicLogin(c *gin.Context) {
 		SpreadSheet: clinic.SpreadSheet,
 		NoRekening:  clinic.NoRekening,
 		AtasNama:    clinic.AtasNama,
+		PathFoto:    clinic.PathFoto,
 		Token:       token,
 	}
 	c.JSON(http.StatusOK, gin.H{
