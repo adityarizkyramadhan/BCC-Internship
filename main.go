@@ -31,7 +31,7 @@ func main() {
 
 	//Klinik
 	r.POST("/clinic/register", handler.NewClinicalHandler)
-	r.POST("/:idclinic/upload", handler.UploadClinicImage)
+	r.POST("/clinic/:idclinic/upload", handler.UploadClinicImage)
 	r.POST("/clinic/login", handler.ClinicLogin)
 	r.GET("/clinic/payment", middleware.CheckJwtClinic(), handler.GetAllPaymentClinic)
 	r.POST("/clinic/:idpayment/validate", middleware.CheckJwtClinic(), handler.UpdatePayment)
