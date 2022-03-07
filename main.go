@@ -24,7 +24,7 @@ func main() {
 	r.POST("/user/:idclinic/payment", middleware.CheckJwtUser(), handler.Payment)
 	r.POST("/user/payment/:idtransaction/upload", middleware.CheckJwtUser(), handler.UploadStructPayment)
 	r.GET("/user/seeclinic", handler.ReadClinic)
-	r.GET("user/clinic/search", handler.SearchClinic)
+	r.GET("/user/clinic/search", handler.SearchClinic)
 	r.GET("/user/history", middleware.CheckJwtUser(), handler.GetHistory)
 	r.GET("/user/community", middleware.CheckJwtUser(), komunitas.GetKomunitas)
 	r.GET("/user/community/search", middleware.CheckJwtUser(), komunitas.SearchKomunitas)
