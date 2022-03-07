@@ -30,7 +30,6 @@ func NewUserHandler(c *gin.Context) {
 		})
 		return
 	}
-	fmt.Println("Sampe sini sukses")
 	password, err := bcrypt.GenerateFromPassword([]byte(body.Password), 12)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
