@@ -76,7 +76,7 @@ func SearchClinic(c *gin.Context) {
 		panic(err)
 	}
 	var body []user.Clinic
-	if db.Preload("ImageClinic").Where("address LIKE ?", "%"+querry+"%").Take(&body); err != nil {
+	if db.Preload("ImageClinic").Where("address LIKE ?", "%"+querry+"%").Find(&body); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status":  "Internal Server Error",
 			"message": "Error when querrying database",

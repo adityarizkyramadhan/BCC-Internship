@@ -82,12 +82,13 @@ func UpdatePatient(c *gin.Context) {
 	var uriPayment model.InputUriPayment
 	c.BindUri(&uriPayment)
 	var statusPasien user.StatusPasien
-	if err := db.Where("id = ?", uint(uriPayment.IdPayment)).Take(&statusPasien).Error; err != nil {
+	if err := db.Where("id_payment = ?", uint(uriPayment.IdPayment)).Take(&statusPasien).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"status":  "failed",
 			"message": "Payment not found",
 			"data":    "nil",
 		})
+		return
 	}
 	var inputan inputanUpdate
 	c.BindJSON(&inputan)
