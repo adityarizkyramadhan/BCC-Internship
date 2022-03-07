@@ -13,3 +13,12 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+imageClinics/foto1-x - cekMenu.png
+imageClinics/foto2-x - listMakanan.png
+imageClinics/foto3-x - listMinuman.png
+imageClinics/foto4-x - loginMenu.png
+.gitignore
+imagesPayment/foto1-x - cekMenu.png
+imagesPayment/foto2-x - menuMinuman.png
+imagesPayment/foto3-x - menuMakanan.png
+imagesPayment/foto4-x - Pembelian.png

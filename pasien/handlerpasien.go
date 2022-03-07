@@ -34,17 +34,18 @@ func GetPasien(c *gin.Context) {
 	clinicLogin := c.MustGet("cliniclogin").(user.ClinicMasuk)
 	var payment []model.Payment
 	db.Where("clinic_id = ?", clinicLogin.ID).Find(&payment)
-	var statusPasien user.StatusPasien
 	for _, v := range payment {
 		if v.Status {
-			var user user.User
-			db.Where("id = ?", v.UserId).Take(&user)
-			db.Where("id = ?", v.ID).Take(&statusPasien)
+			var userIn user.User
+			var statusPasien user.StatusPasien
+			db.Where("id = ?", v.UserId).Take(&userIn)
+			//Find status pasien
+			db.Where("id_payment = ? ", v.ID).Find(&statusPasien)
 			pasien = append(pasien, Pasien{
 				IDPayment:       v.ID,
-				NamaUser:        user.Name,
-				Alamat:          user.Address,
-				Contact:         user.Contact,
+				NamaUser:        userIn.Name,
+				Alamat:          userIn.Address,
+				Contact:         userIn.Contact,
 				JenisHewan:      v.JenisHewan,
 				Keluhan:         v.Keluhan,
 				Ras:             v.Ras,

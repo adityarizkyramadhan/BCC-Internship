@@ -206,10 +206,9 @@ func UpdatePayment(c *gin.Context) {
 		SaveImage:     payment.SaveImage,
 	}
 	statusPasien := user.StatusPasien{
-		Status:    payment.Status,
+		Status:    false,
 		IDPayment: payment.ID,
 	}
-
 	db.Create(&statusPasien)
 	c.JSON(http.StatusAccepted, gin.H{
 		"status":  "success",

@@ -42,6 +42,7 @@ func Payment(c *gin.Context) {
 		JenisKelamin: PayIn.JenisKelamin,
 		Umur:         PayIn.Umur,
 		Tanggal:      PayIn.Tanggal,
+		Jam:          PayIn.Jam,
 		Layanan:      PayIn.Layanan,
 	}
 	if PayIn.Layanan == "home" {

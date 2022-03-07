@@ -2,6 +2,7 @@ package handler
 
 import (
 	"BCC-Internship/config"
+	"BCC-Internship/model"
 	"BCC-Internship/tokengenerator"
 	"BCC-Internship/user"
 	"fmt"
@@ -10,6 +11,55 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 )
+
+func UploadClinicImage(c *gin.Context) {
+	// upload file by gonic/gin
+	file, err := c.FormFile("fotoklinik")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "error",
+			"message": "Invalid input",
+			"data":    err.Error(),
+		})
+		return
+	}
+	var idTrx model.InputUriClinic
+	err = c.BindUri(&idTrx)
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"status":  "error",
+			"message": "Invalid input",
+			"data":    err.Error(),
+		})
+		return
+	}
+	// get file name
+	path := fmt.Sprintf("imageClinics/foto%d-%s", idTrx.IdClinic, file.Filename)
+	// save file to folder
+	err = c.SaveUploadedFile(file, path)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "error",
+			"message": "Invalid input",
+			"data":    err.Error(),
+		})
+		return
+	}
+	image := user.ImageClinic{
+		ClinicID: uint(idTrx.IdClinic),
+		Path:     path,
+	}
+	db, err := config.InitializeDatabases()
+	if err != nil {
+		panic(err)
+	}
+	db.Create(&image)
+	c.JSON(http.StatusCreated, gin.H{
+		"status":  "success",
+		"message": "File uploaded",
+		"data":    image,
+	})
+}
 
 func SearchClinic(c *gin.Context) {
 	querry, isKotaExist := c.GetQuery("kota")
@@ -26,7 +76,7 @@ func SearchClinic(c *gin.Context) {
 		panic(err)
 	}
 	var body []user.Clinic
-	if db.Where("address LIKE ?", "%"+querry+"%").Take(&body); err != nil {
+	if db.Preload("ImageClinic").Where("address LIKE ?", "%"+querry+"%").Take(&body); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status":  "Internal Server Error",
 			"message": "Error when querrying database",
@@ -44,7 +94,7 @@ func SearchClinic(c *gin.Context) {
 			SpreadSheet: body[i].SpreadSheet,
 			NoRekening:  body[i].NoRekening,
 			AtasNama:    body[i].AtasNama,
-			PathFoto:    body[i].PathFoto,
+			ImageClinic: body[i].ImageClinic,
 		})
 	}
 	c.JSON(http.StatusOK, gin.H{
@@ -65,7 +115,7 @@ func ReadClinic(c *gin.Context) {
 		return
 	}
 	var clinic []user.Clinic
-	if db.Find(&clinic); err != nil {
+	if db.Preload("ImageClinic").Find(&clinic); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status":  "Internal Server Error",
 			"message": "Error when finding clinic",
@@ -83,7 +133,7 @@ func ReadClinic(c *gin.Context) {
 			SpreadSheet: clinic[i].SpreadSheet,
 			NoRekening:  clinic[i].NoRekening,
 			AtasNama:    clinic[i].AtasNama,
-			PathFoto:    clinic[i].PathFoto,
+			ImageClinic: clinic[i].ImageClinic,
 		})
 	}
 	c.JSON(http.StatusOK, gin.H{
@@ -103,16 +153,6 @@ func NewClinicalHandler(c *gin.Context) {
 		})
 		return
 	}
-	file, err := c.FormFile("fotoklinik")
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"status":  "error",
-			"message": "Invalid input",
-			"data":    err.Error(),
-		})
-		return
-	}
-
 	var body user.NewClinic
 	if c.BindJSON(&body); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
@@ -142,10 +182,6 @@ func NewClinicalHandler(c *gin.Context) {
 		NoRekening:     body.NoRekening,
 		AtasNama:       body.AtasNama,
 	}
-	// get file name
-	path := fmt.Sprintf("imageClinics/foto%d-%s", int(clinic.ID), file.Filename)
-	// save file to folder
-	err = c.SaveUploadedFile(file, path)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status":  "error",
@@ -154,7 +190,6 @@ func NewClinicalHandler(c *gin.Context) {
 		})
 		return
 	}
-	clinic.PathFoto = path
 	var clinicSama user.Clinic
 	if db.Where("username_clinic = ?", body.UsernameClinic).First(&clinicSama); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -198,7 +233,6 @@ func NewClinicalHandler(c *gin.Context) {
 		NoRekening:  clinic.NoRekening,
 		Token:       token,
 		AtasNama:    clinic.AtasNama,
-		PathFoto:    clinic.PathFoto,
 	}
 	c.JSON(http.StatusCreated, gin.H{
 		"status":  "Status OK",
@@ -258,7 +292,6 @@ func ClinicLogin(c *gin.Context) {
 		SpreadSheet: clinic.SpreadSheet,
 		NoRekening:  clinic.NoRekening,
 		AtasNama:    clinic.AtasNama,
-		PathFoto:    clinic.PathFoto,
 		Token:       token,
 	}
 	c.JSON(http.StatusOK, gin.H{
