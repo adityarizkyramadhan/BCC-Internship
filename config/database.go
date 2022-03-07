@@ -14,7 +14,7 @@ func InitializeDatabases() (*gorm.DB, error) {
 		panic(err)
 	}
 	err = db.AutoMigrate(&user.User{}, &user.Clinic{}, &model.Payment{}, &model.SaveImage{}, &user.StatusPasien{},
-		&user.ImageClinic{})
+		&user.ImageClinic{}, model.Komunitas{})
 	if err != nil {
 		panic(err)
 	}

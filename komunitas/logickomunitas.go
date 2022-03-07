@@ -2,20 +2,12 @@ package komunitas
 
 import (
 	"BCC-Internship/config"
+	"BCC-Internship/model"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
-
-type komunitas struct {
-	gorm.Model
-	NamaKomunitas string
-	JenisHewan    string
-	Deskripsi     string
-	AsalKota      string
-	LinkKomunitas string
-}
 
 type komunitasInput struct {
 	NamaKomunitas string `json:"namaKomunitas" binding:"required"`
@@ -44,7 +36,7 @@ func AddKomunitas(c *gin.Context) {
 		})
 		return
 	}
-	komunitas := komunitas{
+	komunitas := model.Komunitas{
 		NamaKomunitas: komunitasIn.NamaKomunitas,
 		JenisHewan:    komunitasIn.JenisHewan,
 		Deskripsi:     komunitasIn.Deskripsi,
@@ -71,7 +63,7 @@ func AddKomunitas(c *gin.Context) {
 	})
 }
 func GetKomunitas(c *gin.Context) {
-	var komunitas []komunitas
+	var komunitas []model.Komunitas
 	db, err := config.InitializeDatabases()
 	if err != nil {
 		panic(err)
@@ -96,7 +88,7 @@ func GetKomunitas(c *gin.Context) {
 }
 
 func SearchKomunitas(c *gin.Context) {
-	var komunitas []komunitas
+	var komunitas []model.Komunitas
 	db, err := config.InitializeDatabases()
 	if err != nil {
 		panic(err)
@@ -112,19 +104,15 @@ func SearchKomunitas(c *gin.Context) {
 		})
 		return
 	}
+	fmt.Println("Sampe sini sukses deket")
 	if isHewanExist {
 		db.Where("jenis_hewan LIKE ?", "%"+jenisHewan+"%")
 	}
 	if isKotaExist {
 		db.Where("asal_kota LIKE ?", "%"+asalKota+"%")
 	}
-	if db.Find(&komunitas).Error != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"status":  "Not Found",
-			"message": "Community not found",
-			"data":    "Not found",
-		})
-	}
+	db.Find(&komunitas)
+	fmt.Println("Sampe sini sukses deket")
 	var retKom returnKomunitas
 	for _, kom := range komunitas {
 		retKom = returnKomunitas{
@@ -136,6 +124,7 @@ func SearchKomunitas(c *gin.Context) {
 			LinkKomunitas: kom.LinkKomunitas,
 		}
 	}
+	fmt.Println("Sampe sini sukses deket")
 	c.JSON(http.StatusOK, gin.H{
 		"status":  "OK",
 		"message": "Comunity found",
