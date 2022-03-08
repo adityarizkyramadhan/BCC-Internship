@@ -18,7 +18,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	r.Static("/image", "./image")
+	r.Static("/imagesPayment", "./imagesPayment")
+	r.Static("/imageClinics", "./imageClinics")
 	r.POST("/user/register", handler.NewUserHandler)
 	r.POST("/user/login", handler.UserLogin)
 	r.POST("/user/:idclinic/payment", middleware.CheckJwtUser(), handler.Payment)
@@ -31,7 +32,7 @@ func main() {
 
 	//Klinik
 	r.POST("/clinic/register", handler.NewClinicalHandler)
-	r.POST("/clinic/:idclinic/upload", handler.UploadClinicImage)
+	r.POST("/clinic/upload/:idclinic", handler.UploadClinicImage)
 	r.POST("/clinic/login", handler.ClinicLogin)
 	r.GET("/clinic/payment", middleware.CheckJwtClinic(), handler.GetAllPaymentClinic)
 	r.POST("/clinic/:idpayment/validate", middleware.CheckJwtClinic(), handler.UpdatePayment)

@@ -103,5 +103,4 @@ func UpdatePatient(c *gin.Context) {
 		"message": "Update status pasien success",
 		"data":    returnStatus,
 	})
-
 }
