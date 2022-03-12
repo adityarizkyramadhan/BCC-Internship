@@ -42,6 +42,5 @@ func main() {
 	r.POST("/clinic/:idpayment/updatepatient", middleware.CheckJwtClinic(), pasien.UpdatePatient)
 	//komunitas
 	r.POST("/petmate/komunitas", komunitas.AddKomunitas)
-
-	r.Run()
+	r.Run(":5000")
 }
