@@ -47,14 +47,7 @@ func NewUserHandler(c *gin.Context) {
 	}
 	var usernameSama user.User
 	// check username already exists
-	if err := db.Where("username = ?", userPrivate.Username).Take(&usernameSama).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status":  "Internal Server Error",
-			"message": "Error when checking username",
-			"data":    err.Error(),
-		})
-		return
-	}
+	db.Where("username = ?", userPrivate.Username).Take(&usernameSama)
 	if usernameSama.Username == userPrivate.Username {
 		c.JSON(http.StatusConflict, gin.H{
 			"status":  "Conflict",
