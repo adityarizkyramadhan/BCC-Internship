@@ -115,7 +115,7 @@ func ReadClinic(c *gin.Context) {
 		return
 	}
 	var clinic []user.Clinic
-	if db.Preload("ImageClinic").Find(&clinic); err != nil {
+	if err := db.Preload("ImageClinic").Find(&clinic).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status":  "Internal Server Error",
 			"message": "Error when finding clinic",
@@ -154,7 +154,8 @@ func NewClinicalHandler(c *gin.Context) {
 		return
 	}
 	var body user.NewClinic
-	if c.BindJSON(&body); err != nil {
+	err = c.BindJSON(&body)
+	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
 			"status":  "Bad Request",
 			"message": "Error when binding JSON",
@@ -162,6 +163,7 @@ func NewClinicalHandler(c *gin.Context) {
 		})
 		return
 	}
+
 	password, err := bcrypt.GenerateFromPassword([]byte(body.PasswordClinic), 12)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -191,7 +193,7 @@ func NewClinicalHandler(c *gin.Context) {
 		return
 	}
 	var clinicSama user.Clinic
-	if db.Where("username_clinic = ?", body.UsernameClinic).First(&clinicSama); err != nil {
+	if err := db.Where("username_clinic = ?", body.UsernameClinic).First(&clinicSama).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status":  "Internal Server Error",
 			"message": "Error when querrying clinic",
@@ -207,7 +209,7 @@ func NewClinicalHandler(c *gin.Context) {
 		})
 		return
 	}
-	if db.Create(&clinic); err != nil {
+	if err := db.Create(&clinic).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status":  "Internal Server Error",
 			"message": "Error creating clinic",
@@ -251,7 +253,7 @@ func ClinicLogin(c *gin.Context) {
 		})
 	}
 	var body user.ClinicLogin
-	if c.BindJSON(&body); err != nil {
+	if err := c.BindJSON(&body); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
 			"status":  "Bad Request",
 			"message": "Error when binding JSON",
@@ -259,7 +261,7 @@ func ClinicLogin(c *gin.Context) {
 		})
 	}
 	var clinic user.Clinic
-	if db.Where("username_clinic = ?", body.Username).Take(&clinic); err != nil {
+	if err := db.Where("username_clinic = ?", body.Username).Take(&clinic).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status":  "Internal Server Error",
 			"message": "Erorr when querrying database",

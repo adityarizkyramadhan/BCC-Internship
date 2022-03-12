@@ -4,7 +4,6 @@ import (
 	"BCC-Internship/config"
 	"BCC-Internship/tokengenerator"
 	"BCC-Internship/user"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -22,7 +21,7 @@ func NewUserHandler(c *gin.Context) {
 		return
 	}
 	var body user.NewUser
-	if c.BindJSON(&body); err != nil {
+	if err = c.BindJSON(&body); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
 			"status":  "Bad Request",
 			"message": "Error when binding JSON",
@@ -48,7 +47,7 @@ func NewUserHandler(c *gin.Context) {
 	}
 	var usernameSama user.User
 	// check username already exists
-	if db.Where("username = ?", userPrivate.Username).Take(&usernameSama); err != nil {
+	if err := db.Where("username = ?", userPrivate.Username).Take(&usernameSama).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status":  "Internal Server Error",
 			"message": "Error when checking username",
@@ -64,8 +63,7 @@ func NewUserHandler(c *gin.Context) {
 		})
 		return
 	}
-	fmt.Println("Sampe sini sukses deket db create")
-	if db.Create(&userPrivate); err != nil {
+	if err := db.Create(&userPrivate).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status":  "Internal Server Error",
 			"message": "Error creating user",
@@ -73,7 +71,6 @@ func NewUserHandler(c *gin.Context) {
 		})
 		return
 	}
-	fmt.Println("Sampe sini sukses deket token")
 	token, err := tokengenerator.GenerateTokenUser(&userPrivate)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -108,7 +105,7 @@ func UserLogin(c *gin.Context) {
 		return
 	}
 	var body user.UserLogin
-	if c.BindJSON(&body); err != nil {
+	if err = c.BindJSON(&body); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
 			"status":  "Bad Request",
 			"message": "Error when binding JSON",
@@ -117,7 +114,7 @@ func UserLogin(c *gin.Context) {
 		return
 	}
 	var userPrivate user.User
-	if db.Where("username = ?", body.Username).Take(&userPrivate); err != nil {
+	if err := db.Where("username = ?", body.Username).Take(&userPrivate).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status":  "Status Internal Server Error",
 			"message": "Error when querrying username",

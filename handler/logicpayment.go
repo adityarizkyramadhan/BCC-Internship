@@ -54,8 +54,15 @@ func Payment(c *gin.Context) {
 	if err != nil {
 		panic(err)
 	}
-
-	db.Create(&paymentUser)
+	err = db.Create(&paymentUser).Error
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "error",
+			"message": "Invalid input",
+			"data":    err.Error(),
+		})
+		return
+	}
 	sendPayment := model.PaymentReturn{
 		IDTransaction: paymentUser.ID,
 		UserId:        paymentUser.UserId,
@@ -118,7 +125,15 @@ func UploadStructPayment(c *gin.Context) {
 	if err != nil {
 		panic(err)
 	}
-	db.Create(&image)
+	err = db.Create(&image).Error
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "error",
+			"message": "Invalid input",
+			"data":    err.Error(),
+		})
+		return
+	}
 	returnImage := model.ReturnImage{
 		TransactionID: uint(idTrx.IdTransaction),
 		Path:          image.Path,

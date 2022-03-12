@@ -209,7 +209,15 @@ func UpdatePayment(c *gin.Context) {
 		Status:    false,
 		IDPayment: payment.ID,
 	}
-	db.Create(&statusPasien)
+	err = db.Create(&statusPasien).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status":  "error",
+			"message": "Internal server error",
+			"data":    err.Error(),
+		})
+		return
+	}
 	c.JSON(http.StatusAccepted, gin.H{
 		"status":  "success",
 		"message": "Validate payment success",

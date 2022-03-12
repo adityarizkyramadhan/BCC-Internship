@@ -16,7 +16,14 @@ func GetHistory(c *gin.Context) {
 	}
 	userLogin := c.MustGet("userlogin").(user.UserMasuk)
 	var history []model.Payment
-	db.Preload("SaveImage").Where("user_id = ?", userLogin.ID).Find(&history)
+	if err := db.Preload("SaveImage").Where("user_id = ?", userLogin.ID).Find(&history).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "error",
+			"message": "Invalid input",
+			"data":    err.Error(),
+		})
+		return
+	}
 	var printHistory []model.GetPayment
 	for _, v := range history {
 		printHistory = append(printHistory, model.GetPayment{
