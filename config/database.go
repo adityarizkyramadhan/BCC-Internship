@@ -9,7 +9,9 @@ import (
 )
 
 func InitializeDatabases() (*gorm.DB, error) {
-	db, err := gorm.Open(mysql.Open("admin:HnVXVx8rF4G3YjS3nKuQrKVS7apg4Vzt@tcp(13.212.140.154:3306)/intern_bcc_7?parseTime=true"), &gorm.Config{})
+	dnsBCC := "admin:HnVXVx8rF4G3YjS3nKuQrKVS7apg4Vzt@tcp(13.212.140.154:3306)/intern_bcc_7?parseTime=true"
+	// dnsXAMPP := "root:@tcp(127.0.0.1:3306)/klinikhewan?parseTime=true"
+	db, err := gorm.Open(mysql.Open(dnsBCC), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
