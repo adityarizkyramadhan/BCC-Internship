@@ -20,26 +20,32 @@ func main() {
 	}
 	r.Static("/imagesPayment", "./imagesPayment")
 	r.Static("/imageClinics", "./imageClinics")
-	r.POST("/user/register", handler.NewUserHandler)
-	r.POST("/user/login", handler.UserLogin)
-	r.POST("/user/:idclinic/payment", middleware.CheckJwtUser(), handler.Payment)
-	r.POST("/user/payment/:idtransaction/upload", middleware.CheckJwtUser(), handler.UploadStructPayment)
-	r.GET("/user/seeclinic", handler.ReadClinic)
-	r.GET("/user/clinic/search", handler.SearchClinic)
-	r.GET("/user/history", middleware.CheckJwtUser(), handler.GetHistory)
-	r.GET("/user/community", middleware.CheckJwtUser(), komunitas.GetKomunitas)
-	r.GET("/user/community/search", middleware.CheckJwtUser(), komunitas.SearchKomunitas)
-
+	// set grup endpoint
+	user := r.Group("/user")
+	{
+		user.POST("/register", handler.NewUserHandler)
+		user.POST("/login", handler.UserLogin)
+		user.POST("/:idclinic/payment", middleware.CheckJwtUser(), handler.Payment)
+		user.POST("/payment/:idtransaction/upload", middleware.CheckJwtUser(), handler.UploadStructPayment)
+		user.GET("/seeclinic", handler.ReadClinic)
+		user.GET("/clinic/search", handler.SearchClinic)
+		user.GET("/history", middleware.CheckJwtUser(), handler.GetHistory)
+		user.GET("/community", middleware.CheckJwtUser(), komunitas.GetKomunitas)
+		user.GET("/community/search", middleware.CheckJwtUser(), komunitas.SearchKomunitas)
+	}
 	//Klinik
-	r.POST("/clinic/register", handler.NewClinicalHandler)
-	r.POST("/clinic/upload/:idclinic", handler.UploadClinicImage)
-	r.POST("/clinic/login", handler.ClinicLogin)
-	r.GET("/clinic/payment", middleware.CheckJwtClinic(), handler.GetAllPaymentClinic)
-	r.POST("/clinic/:idpayment/validate", middleware.CheckJwtClinic(), handler.UpdatePayment)
-	r.GET("/clinic/paymentsuccess", middleware.CheckJwtClinic(), handler.SeeValidatePayment)
-	r.GET("/clinic/showinvoice", middleware.CheckJwtClinic(), handler.ShowInvoices)
-	r.GET("/clinic/seepatient", middleware.CheckJwtClinic(), pasien.GetPasien)
-	r.POST("/clinic/:idpayment/updatepatient", middleware.CheckJwtClinic(), pasien.UpdatePatient)
+	clinic := r.Group("/clinic")
+	{
+		clinic.POST("/register", handler.NewClinicalHandler)
+		clinic.POST("/upload/:idclinic", handler.UploadClinicImage)
+		clinic.POST("/login", handler.ClinicLogin)
+		clinic.GET("/payment", middleware.CheckJwtClinic(), handler.GetAllPaymentClinic)
+		clinic.POST("/:idpayment/validate", middleware.CheckJwtClinic(), handler.UpdatePayment)
+		clinic.GET("/paymentsuccess", middleware.CheckJwtClinic(), handler.SeeValidatePayment)
+		clinic.GET("/showinvoice", middleware.CheckJwtClinic(), handler.ShowInvoices)
+		clinic.GET("/seepatient", middleware.CheckJwtClinic(), pasien.GetPasien)
+		clinic.POST("/:idpayment/updatepatient", middleware.CheckJwtClinic(), pasien.UpdatePatient)
+	}
 	//komunitas
 	r.POST("/petmate/komunitas", komunitas.AddKomunitas)
 	r.Run(":5000")

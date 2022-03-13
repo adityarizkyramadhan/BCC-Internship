@@ -136,6 +136,7 @@ func ReadClinic(c *gin.Context) {
 			ImageClinic: clinic[i].ImageClinic,
 		})
 	}
+	fmt.Println(printClinic)
 	c.JSON(http.StatusOK, gin.H{
 		"status":  "Status OK",
 		"message": "Clinic found",
