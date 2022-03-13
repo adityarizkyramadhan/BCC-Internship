@@ -193,7 +193,7 @@ func NewClinicalHandler(c *gin.Context) {
 		return
 	}
 	var clinicSama user.Clinic
-	if err := db.Where("username_clinic = ?", body.UsernameClinic).First(&clinicSama).Error; err != nil {
+	if err := db.Where("username_clinic = ?", body.UsernameClinic).Take(&clinicSama).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status":  "Internal Server Error",
 			"message": "Error when querrying clinic",
